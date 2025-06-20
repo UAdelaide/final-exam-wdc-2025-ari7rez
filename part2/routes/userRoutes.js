@@ -96,4 +96,22 @@ router.get('/my-dogs', async (req, res) => {
   }
 });
 
+router.get('/dogs', async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT * FROM Dogs'); // Replace 'Dogs' with your table name
+    // random dog photo
+    const randomDogPhoto = await axios.get('https://dog.ceo/api/breeds/image/random');
+    const photoUrl = randomDogPhoto.data.message; // This URL will be used for each dog in the table
+    // Add the photo URL to each dog in the database
+    const dogsWithPhotos = rows.map(dog => ({
+      ...dog,
+      photo: photoUrl,
+    }));
+
+    res.json(dogsWithPhotos); // Send back dogs with photo URLs
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch dogs or random photo' });
+  }
+});
+
 module.exports = router;
