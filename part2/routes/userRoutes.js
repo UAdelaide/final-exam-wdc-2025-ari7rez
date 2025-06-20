@@ -102,7 +102,6 @@ router.get('/dogs', async (req, res) => {
     // random dog photo
     const randomDogPhoto = await axios.get('https://dog.ceo/api/breeds/image/random');
     const photoUrl = randomDogPhoto.data.message; // This URL will be used for each dog in the table
-    // Add the photo URL to each dog in the database
     const dogsWithPhotos = rows.map(dog => ({
       ...dog,
       photo: photoUrl,
