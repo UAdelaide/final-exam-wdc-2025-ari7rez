@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Dog of the Day</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+        body {
+            font-family: cursive;
+            background: linear-gradient(to right, red, yellow, green, blue, pink);
+            color: lime;
+        }
+
+        h1 {
+            font-size: 48px;
+            text-shadow: 2px 2px 5px black;
+        }
+
+        button {
+            padding: 50px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <h1>Dog of the Day</h1>
+        <img src="dogpicture.png">
+        <button @click="doSomething">Click me</button>
+        <button @click="doSomething">Another button</button>
+        <button @click="doSomething">One more button</button>
+    </div>
+
+    <script>
+        const { createApp } = Vue;
+        createApp({
+            methods: {
+                doSomething() {
+                    alert("This does nothing useful!");
+                }
+            }
+        }).mount('#app');
+    </script>
+</body>
+
+</html>
