@@ -78,21 +78,16 @@ router.get('/logout', (req, res) => {
   });
 });
 
-// New route to fetch the logged-in owner's dogs
-router.get('/my-dogs', async (req, res) => {
-  if (!req.session.user || req.session.user.role !== 'owner') {
-    return res.status(403).json({ error: 'Not authorized' });
-  }
+router.get('/dogs', async (req, res) => {
   try {
-    const [rows] = await db.query(`
-      SELECT dog_id, name
-      FROM Dogs
-      WHERE owner_id = ?
-    `, [req.session.user.id]);
-    res.json(rows); // Returning all dogs owned by the logged-in owner
-  } catch (err) {
+
+    const [rows] = await db.query('SELECT dog_id, owner_id, name, breed, size FROM Dogs');
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching all dogs:', error);
     res.status(500).json({ error: 'Failed to fetch dogs' });
   }
 });
+
 
 module.exports = router;
