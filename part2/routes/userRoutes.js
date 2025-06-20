@@ -34,6 +34,7 @@ router.get('/me', (req, res) => {
   }
   res.json(req.session.user);
 });
+
 // POST login (updated version with session + redirect)
 router.post('/login', async (req, res) => {
   const { username, password } = req.body;
@@ -69,6 +70,7 @@ router.post('/login', async (req, res) => {
   }
 });
 
+// Logout route
 router.get('/logout', (req, res) => {
   req.session.destroy(() => {
     res.clearCookie('connect.sid'); // Clear the session cookie
@@ -87,9 +89,10 @@ router.get('/my-dogs', async (req, res) => {
       FROM Dogs
       WHERE owner_id = ?
     `, [req.session.user.id]);
-    res.json(rows);
+    res.json(rows); // Returning all dogs owned by the logged-in owner
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch dogs' });
   }
 });
+
 module.exports = router;
