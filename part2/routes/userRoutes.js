@@ -96,6 +96,8 @@ router.get('/my-dogs', async (req, res) => {
   }
 });
 
+
+
 router.get('/dogs', async (req, res) => {
   try {
     const [rows] = await db.query('SELECT * FROM Dogs');
@@ -104,7 +106,10 @@ router.get('/dogs', async (req, res) => {
     const photoUrl = randomDogPhoto.data.message;
 
     const dogsWithPhotos = rows.map(dog => ({
-      ...dog,
+      dog_id: dog.dog_id,
+      owner_id: dog.owner_id,
+      name: dog.name,
+      size: dog.size,
       photo: photoUrl,
     }));
 
@@ -113,4 +118,5 @@ router.get('/dogs', async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch dogs or random photo' });
   }
 });
+
 module.exports = router;
