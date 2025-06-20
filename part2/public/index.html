@@ -11,68 +11,34 @@
 
 <body class="bg-light">
 
+  <div class="container py-5" style="max-width: 400px;">
+    <form action="/api/users/login" method="POST">
+      <div class="mb-3">
+        <label class="form-label">Email</label>
+        <input type="text" name="username" class="form-control" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Password</label>
+        <input type="password" name="password" class="form-control" required>
+      </div>
+      <button type="submit" class="btn btn-primary w-100">Login</button>
+    </form>
+  </div>
+
   <div id="app" class="container py-5">
     <h1 class="mb-4 text-primary">{{ message }}</h1>
     <p class="lead">Connect with trusted walkers for your beloved dog!</p>
-
-    <!-- Dog Table -->
-    <h2>Available Dogs</h2>
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Size</th>
-          <th>Photo</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="dog in dogs" :key="dog.dog_id">
-          <td>{{ dog.name }}</td>
-          <td>{{ dog.size }}</td>
-          <td><img :src="dog.photo" alt="dog photo" width="100"></td>
-        </tr>
-      </tbody>
-    </table>
 
     <a href="owner-dashboard.html" class="btn btn-outline-primary me-2">Owner Dashboard</a>
     <a href="walker-dashboard.html" class="btn btn-outline-success">Walker Dashboard</a>
   </div>
 
   <script>
-    const { createApp, ref, onMounted } = Vue;
-
+    const { createApp } = Vue;
     createApp({
-      setup() {
-        const dogs = ref([]);
-        const message = ref('Welcome to the Dog Walking Service!');
-
-        // Fetch dog data from the /api/dogs endpoint
-        async function loadDogs() {
-          try {
-            const res = await fetch('/api/dogs');
-            const dogsData = await res.json();
-
-            // Fetch images from dogs.ceo API for each dog
-            await Promise.all(dogsData.map(async (dog) => {
-              const imgRes = await fetch('https://dog.ceo/api/breeds/image/random');
-              const imgJson = await imgRes.json();
-              dog.photo = imgJson.message; // Set photo for each dog
-            }));
-
-            dogs.value = dogsData; // Set the dogs data
-          } catch (err) {
-            console.error('Failed to fetch dogs:', err);
-          }
-        }
-
-        // Load dogs when the page is mounted
-        onMounted(() => {
-          loadDogs();
-        });
-
+      data() {
         return {
-          dogs,
-          message
+          message: 'Welcome to the Dog Walking Service!'
         };
       }
     }).mount('#app');
