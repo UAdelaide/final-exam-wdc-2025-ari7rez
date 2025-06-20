@@ -30,7 +30,7 @@
               <strong>Location:</strong> {{ walk.location }}<br>
               <strong>Owner:</strong> {{ walk.owner_name }}
             </p>
-            <button type=button class="btn btn-outline-success" @click="applyToWalk(walk.request_id)">Apply</button>
+            <button type="button" class="btn btn-outline-success" @click="applyToWalk(walk.request_id)">Apply</button>
           </div>
         </div>
       </div>
@@ -46,7 +46,6 @@
         const walks = ref([]);
         const message = ref('');
         const error = ref('');
-        const user = 3;
 
         async function loadWalkRequests() {
           try {
@@ -58,12 +57,26 @@
           }
         }
 
+        async function getCurrentUser() {
+          try {
+            const res = await fetch('/api/users/me');
+            if (!res.ok) throw new Error('Failed to fetch current user');
+            return await res.json();
+          } catch (err) {
+            error.value = err.message;
+            return null;
+          }
+        }
+
         async function applyToWalk(requestId) {
           try {
+            const user = await getCurrentUser();
+            if (!user) throw new Error('No logged-in user');
+
             const res = await fetch(`/api/walks/${requestId}/apply`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ walker_id: user })
+              body: JSON.stringify({ walker_id: user.id })
             });
             const result = await res.json();
 
