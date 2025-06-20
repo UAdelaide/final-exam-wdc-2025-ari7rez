@@ -69,6 +69,11 @@ router.post('/login', async (req, res) => {
   }
 });
 
-
+router.get('/logout', (req, res) => {
+  req.session.destroy(() => {
+    res.clearCookie('connect.sid'); // Clear the session cookie
+    res.redirect('/'); // Return to login page
+  });
+});
 
 module.exports = router;
