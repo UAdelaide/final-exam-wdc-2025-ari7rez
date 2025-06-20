@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../models/db');
-const axios = require('axios');
 
 // GET all users (for admin/testing)
 router.get('/', async (req, res) => {
@@ -93,29 +92,6 @@ router.get('/my-dogs', async (req, res) => {
     res.json(rows); // Returning all dogs owned by the logged-in owner
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch dogs' });
-  }
-});
-
-
-
-router.get('/dogs', async (req, res) => {
-  try {
-    const [rows] = await db.query('SELECT * FROM Dogs');
-
-    const randomDogPhoto = await axios.get('https://dog.ceo/api/breeds/image/random');
-    const photoUrl = randomDogPhoto.data.message;
-
-    const dogsWithPhotos = rows.map(dog => ({
-      dog_id: dog.dog_id,
-      owner_id: dog.owner_id,
-      name: dog.name,
-      size: dog.size,
-      photo: photoUrl,
-    }));
-
-    res.json(dogsWithPhotos);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch dogs or random photo' });
   }
 });
 
