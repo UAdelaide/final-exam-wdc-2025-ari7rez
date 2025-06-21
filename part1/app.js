@@ -68,20 +68,33 @@ app.get('/api/walkrequests/open', async (req, res) => {
 app.get('/api/walkers/summary', async (req, res) => {
     try {
         const [rows] = await db.execute(`
-      SELECT u.username AS walker_username,
-             COUNT(wr.rating_id) AS total_ratings,
-             AVG(wr.rating) AS average_rating,
-             COUNT(CASE WHEN wq.status = 'completed' THEN 1 END) AS completed_walks
-      FROM Users u
-      LEFT JOIN WalkRatings wr ON u.user_id = wr.walker_id
-      LEFT JOIN WalkApplications wa ON u.user_id = wa.walker_id
-      LEFT JOIN WalkRequests wq ON wa.request_id = wq.request_id
-      WHERE u.role = 'walker'
-      GROUP BY u.username
-    `);
-        res.json(rows);
+            SELECT
+                u.username AS walker_username,
+                COUNT(DISTINCT wrt.rating_id) AS total_ratings,
+                AVG(wrt.rating) AS average_rating,
+                COUNT(DISTINCT CASE WHEN wrq.status = 'completed' THEN wa.request_id END) AS completed_walks
+            FROM
+                Users u
+            LEFT JOIN WalkApplications wa ON u.user_id = wa.walker_id AND wa.status = 'accepted'
+            LEFT JOIN WalkRequests wrq ON wa.request_id = wrq.request_id
+            LEFT JOIN WalkRatings wrt ON u.user_id = wrt.walker_id
+            WHERE
+                u.role = 'walker'
+            GROUP BY
+                u.user_id, u.username
+        `);
+
+        const summary = rows.map(row => ({
+            walker_username: row.walker_username,
+            total_ratings: parseInt(row.total_ratings, 10),
+            average_rating: row.average_rating ? parseFloat(row.average_rating) : null,
+            completed_walks: parseInt(row.completed_walks, 10)
+        }));
+
+        res.json(summary);
     } catch (err) {
-        res.status(500).json({ error: 'Failed to get walker summary' });
+        console.error('Error fetching walker summary:', err);
+        res.status(500).json({ error: 'Failed to retrieve walker summary.' });
     }
 });
 
