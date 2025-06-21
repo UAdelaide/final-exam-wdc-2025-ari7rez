@@ -78,7 +78,6 @@ router.get('/logout', (req, res) => {
   });
 });
 
-
 router.get('/dogs', async (req, res) => {
   try {
 
@@ -89,7 +88,6 @@ router.get('/dogs', async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch dogs' });
   }
 });
-
 
 module.exports = router;
 
