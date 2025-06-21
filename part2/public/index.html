@@ -31,6 +31,33 @@
 
     <a href="owner-dashboard.html" class="btn btn-outline-primary me-2">Owner Dashboard</a>
     <a href="walker-dashboard.html" class="btn btn-outline-success">Walker Dashboard</a>
+
+    <!-- ADDED: All Registered Dogs Table -->
+    <div class="mt-5">
+      <h2>All Registered Dogs</h2>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Dog Name</th>
+            <th>Size</th>
+            <th>Owner</th>
+            <th>Photo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="dog in dogs" :key="dog.dog_name">
+            <td>{{ dog.dog_name }}</td>
+            <td>{{ dog.size }}</td>
+            <td>{{ dog.owner_username }}</td>
+            <td>
+              <img v-if="dog.photoUrl" :src="dog.photoUrl" alt="Dog photo" style="max-width: 100px;">
+              <span v-else>Loading...</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- END ADDED -->
   </div>
 
   <script>
@@ -38,10 +65,33 @@
     createApp({
       data() {
         return {
-          message: 'Welcome to the Dog Walking Service!'
+          message: 'Welcome to the Dog Walking Service!',
+          dogs: []
         };
       },
+      async mounted() {
+        // Fetch dogs from  Express API
+        const res = await fetch('/api/dogs');
+        const dogsData = await res.json();
 
+        // For each dog, fetch a random photo
+        const dogsWithPhotos = await Promise.all(
+          dogsData.map(async (dog) => {
+            try {
+              const photoRes = await fetch('https://dog.ceo/api/breeds/image/random');
+              const photoData = await photoRes.json();
+              return {
+                ...dog,
+                photoUrl: photoData.message
+              };
+            } catch (e) {
+              return { ...dog, photoUrl: '' };
+            }
+          })
+        );
+
+        this.dogs = dogsWithPhotos;
+      }
     }).mount('#app');
   </script>
 
